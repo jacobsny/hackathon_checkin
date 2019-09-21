@@ -1,17 +1,23 @@
-def detect_faces(path):
+from PIL import Image
+
+
+def detect_faces():
     """Detects number of faces in an image."""
     from google.cloud import vision
     import io
+    from google.cloud.vision import types
     client = vision.ImageAnnotatorClient()
-
-    with io.open(path, 'rb') as image_file:
+    with io.open("image.png", 'rb') as image_file:
         content = image_file.read()
-
     image = vision.types.Image(content=content)
 
     response = client.face_detection(image=image)
     faces = response.face_annotations
-    return len(faces)
+
+    i = 0
+    for face in faces:
+        i += 1
+    return i >= 1
 
 
 def text_to_speech(text):
@@ -79,6 +85,3 @@ def main():
         text_to_speech(line)
         """trigger more listening and append response in array"""
     """append array to end of google sheets"""
-
-
-
