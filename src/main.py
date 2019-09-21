@@ -1,6 +1,7 @@
 from PIL import Image
 import pygame
 import time
+from src import mic
 
 def detect_faces():
     """Detects number of faces in an image."""
@@ -88,14 +89,17 @@ def speech_to_text(path):
 
 
 def main():
+    row = []
     with open("que.txt") as f:
         lines = f.readlines()
     mainQ = lines.pop(0)
     text_to_speech(mainQ)
     time.sleep(5)
-    """trigger listen and speech to text"""
+    language = mic.main()
+    row.append(language)
     for line in lines:
         text_to_speech(line)
+        response = mic.main()
+        row.append(response)
         time.sleep(5)
-        """trigger more listening and append response in array"""
     """append array to end of google sheets"""

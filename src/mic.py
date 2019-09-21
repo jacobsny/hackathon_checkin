@@ -123,15 +123,7 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            print(transcript + overwrite_chars)
-
-            # Exit recognition if any of the transcribed phrases could be
-            # one of our keywords.
-            if re.search(r'\b(exit|quit)\b', transcript, re.I):
-                print('Exiting..')
-                break
-
-            num_chars_printed = 0
+            return transcript + overwrite_chars
 
 
 def main():
@@ -156,7 +148,7 @@ def main():
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses)
+        return listen_print_loop(responses)
 
 
 if __name__ == '__main__':
