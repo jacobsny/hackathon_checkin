@@ -28,7 +28,7 @@ def main(array):
 
     # The A1 notation of a range to search for a logical table of data.
     # Values will be appended after the last row of the table.
-    range_name = 'A:F'
+    range_name = 'B:F'
 
     # How the input data should be interpreted.
     value_input_option = 'RAW'
@@ -41,8 +41,5 @@ def main(array):
     result = service.spreadsheets().values().append(
         spreadsheetId=spreadsheet_id, range=range_name,
         valueInputOption=value_input_option, body=body).execute()
-    print('{0} cells appended.'.format(result \
-                                       .get('updates') \
-                                       .get('updatedCells')))
 
-main(["english", "no", "no", "no", "no"])
+

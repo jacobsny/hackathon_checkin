@@ -1,6 +1,7 @@
 from PIL import Image
 import pygame
 import time
+from googleapiclient import discovery
 from src import mic
 from src import sheets
 import pygame.camera
@@ -118,7 +119,7 @@ def checkID():
         image = cam.get_image()
         pil_string_image = pygame.image.tostring(image, "RGB")
         im = Image.frombytes("RGB", (1280, 720), pil_string_image)
-        im.save("image.png", "PNG")
+        # im.save("image.png", "PNG")
         cam.stop()
         with io.open("image.png", 'rb') as image_file:
             content = image_file.read()
@@ -142,11 +143,22 @@ def checkID():
                 if char in name:
                     boo = False
             if boo and len(name) > 1:
-                textList.append(name)
+                textList.append(name.upper())
     textList.sort(key=len, reverse=True)
+    rsvp = False
+    spreadsheet_id = '1entWz5u4M0q0t1OqS7gsMNKuaGHUEzgfuxMjjKe2Qsc'
+    range_name = "Sheet2"
+    credentials = None
+    service = discovery.build('sheets', 'v4', credentials=credentials)
+    result = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id, range=range_name).execute()["values"]
+    for arr in result:
+        if arr[0].upper() in textList and arr[1].upper() in textList:
+            rsvp = True
+            name = arr[0] + " " + arr[1]
     response = client.face_detection(image=image)
     faces = response.face_annotations
-    return len(faces) == 2
+    return rsvp, name
 
 
 def main():
@@ -161,7 +173,9 @@ def main():
     card = lines.pop(0)
     text_to_speech(card)
     time.sleep(5)
-    if checkID():
+    idCheck, name = checkID()
+    row = [name] + row
+    if idCheck:
         for line in lines:
             text_to_speech(line)
             time.sleep(3)
