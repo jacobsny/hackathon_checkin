@@ -22,5 +22,5 @@ while not main.detect_faces():
     im.save("image.png", "PNG")
     cam.stop()
     time.sleep(1)
-
+main.main()
 

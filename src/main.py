@@ -1,5 +1,6 @@
 from PIL import Image
-
+import pygame
+import time
 
 def detect_faces():
     """Detects number of faces in an image."""
@@ -48,7 +49,12 @@ def text_to_speech(text):
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type
     response = client.synthesize_speech(synthesis_input, voice, audio_config)
-    return response
+    with open('output.mp3', 'wb') as out:
+        # Write the response to the output file.
+        out.write(response.audio_content)
+        print('Audio content written to file "output.mp3"')
+    pygame.mixer.music.load('output.mp3')
+    pygame.mixer.music.play(0)
 
 
 def speech_to_text(path):
@@ -82,12 +88,14 @@ def speech_to_text(path):
 
 
 def main():
-    with open("src/que.txt") as f:
+    with open("que.txt") as f:
         lines = f.readlines()
     mainQ = lines.pop(0)
     text_to_speech(mainQ)
+    time.sleep(5)
     """trigger listen and speech to text"""
     for line in lines:
         text_to_speech(line)
+        time.sleep(5)
         """trigger more listening and append response in array"""
     """append array to end of google sheets"""
