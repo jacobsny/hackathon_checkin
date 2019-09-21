@@ -152,6 +152,7 @@ def checkID():
     service = discovery.build('sheets', 'v4', credentials=credentials)
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheet_id, range=range_name).execute()["values"]
+    name = ""
     for arr in result:
         if arr[0].upper() in textList and arr[1].upper() in textList:
             rsvp = True
@@ -181,7 +182,6 @@ def main():
             time.sleep(3)
             response = mic.main()
             row.append(response)
-        print(row)
         sheets.main(row)
     else:
         print("something with our system didn't match up with your records")
