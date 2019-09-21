@@ -126,10 +126,10 @@ def listen_print_loop(responses):
             return transcript + overwrite_chars
 
 
-def main():
+def main(lang):
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
-    language_code = 'en-US'  # a BCP-47 language tag
+    language_code = lang  # a BCP-47 language tag
 
     client = speech.SpeechClient()
     config = types.RecognitionConfig(
@@ -152,4 +152,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main('en-US')

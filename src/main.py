@@ -1,6 +1,8 @@
 from PIL import Image
 import pygame
 import time
+
+from google.cloud import translate
 from googleapiclient import discovery
 from src import mic
 from src import sheets
@@ -32,7 +34,7 @@ def detect_faces():
     return boo
 
 
-def text_to_speech(text):
+def text_to_speech(text,lang):
     from google.cloud import texttospeech
 
     # Instantiates a client
@@ -44,7 +46,7 @@ def text_to_speech(text):
     # Build the voice request, select the language code ("en-US") and the ssml
     # voice gender ("neutral")
     voice = texttospeech.types.VoiceSelectionParams(
-        language_code='en-US',
+        language_code=lang,
         ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL)
 
     # Select the type of audio file you want returned
@@ -62,7 +64,7 @@ def text_to_speech(text):
     pygame.mixer.music.play(0)
 
 
-def speech_to_text(path):
+def speech_to_text(path, lang):
     import io
     import os
 
@@ -82,7 +84,7 @@ def speech_to_text(path):
     config = types.RecognitionConfig(
         encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
         sample_rate_hertz=16000,
-        language_code='en-US')
+        language_code=lang)
 
     # Detects speech in the audio file
     response = client.recognize(config, audio)
@@ -167,20 +169,26 @@ def main():
     with open("que.txt") as f:
         lines = f.readlines()
     mainQ = lines.pop(0)
-    text_to_speech(mainQ)
+    text_to_speech(mainQ,'en-US')
     time.sleep(2)
-    language = mic.main()
+    translate_client = translate.Client()
+
+    languageInEnglish = mic.main('en-US')
+    result = translate_client.detect_language(languageInEnglish)
+    language = result['language']
     row.append(language)
     card = lines.pop(0)
-    text_to_speech(card)
+    text_to_speech(card, language)
     time.sleep(5)
     idCheck, name = checkID()
     row = [name] + row
     if idCheck:
         for line in lines:
-            text_to_speech(line)
+            # line translated from en to lang
+            text_to_speech(line, language)
             time.sleep(3)
-            response = mic.main()
+            response = mic.main(language)
+            # response translated from lang to en
             row.append(response)
         sheets.main(row)
     else:
