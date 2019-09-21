@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Please state your preferred language. //UI shows "state your preferred language"
 May I see your ID?
 What is your shirt size?
