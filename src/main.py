@@ -14,10 +14,16 @@ def detect_faces():
     response = client.face_detection(image=image)
     faces = response.face_annotations
 
-    i = 0
+    boo = False
     for face in faces:
-        i += 1
-    return i >= 1
+        vertices = ([[vertex.x, vertex.y] for vertex in face.bounding_poly.vertices])
+        side1 = abs(vertices[0][0] - vertices[1][0])
+        side2 = abs(vertices[0][1] - vertices[2][1])
+        area = side1 * side2
+        # print(area, 400*400)
+        if area > (400 * 400):
+            boo = True
+    return boo
 
 
 def text_to_speech(text):
