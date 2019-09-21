@@ -13,7 +13,6 @@ from googleapiclient import discovery
 
 
 def main(array):
-    # TODO: Change placeholder below to generate authentication credentials. See
     # https://developers.google.com/sheets/quickstart/python#step_3_set_up_the_sample
     #
     # Authorize using one of the following scopes:
@@ -29,20 +28,21 @@ def main(array):
 
     # The A1 notation of a range to search for a logical table of data.
     # Values will be appended after the last row of the table.
-    range_ = 'A:F'
+    range_name = 'A:F'
 
     # How the input data should be interpreted.
-    value_input_option = 'RAW'  # TODO: Update placeholder value.
+    value_input_option = 'RAW'
 
-    # How the input data should be inserted.
-    insert_data_option = 'INSERT_ROWS'  # TODO: Update placeholder value.
 
-    value_range_body = {
-        array
+    values = [array]
+    body = {
+        'values': values
     }
+    result = service.spreadsheets().values().append(
+        spreadsheetId=spreadsheet_id, range=range_name,
+        valueInputOption=value_input_option, body=body).execute()
+    print('{0} cells appended.'.format(result \
+                                       .get('updates') \
+                                       .get('updatedCells')))
 
-    request = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id, range=range_, valueInputOption=value_input_option, insertDataOption=insert_data_option, body=value_range_body)
-    response = request.execute()
-
-    # TODO: Change code below to process the `response` dict:
-    pprint(response)
+main(["english", "no", "no", "no", "no"])

@@ -3,6 +3,8 @@ import pygame
 import time
 from src import mic
 from src import sheets
+import pygame.camera
+
 
 def detect_faces():
     """Detects number of faces in an image."""
@@ -89,18 +91,85 @@ def speech_to_text(path):
     return responseString
 
 
+def checkID():
+    pygame.camera.init()
+    cam = pygame.camera.Camera('/dev/video0', (1280, 720))
+    cam.start()
+    image = cam.get_image()
+    pil_string_image = pygame.image.tostring(image, "RGB")
+    im = Image.frombytes("RGB", (1280, 720), pil_string_image)
+    im.save("image.png", "PNG")
+    im.show()
+    cam.stop()
+    from google.cloud import vision
+    import io
+    client = vision.ImageAnnotatorClient()
+    with io.open("image.png", 'rb') as image_file:
+        content = image_file.read()
+    image = vision.types.Image(content=content)
+    responseLabels = client.label_detection(image=image)
+    labels = responseLabels.label_annotations
+    ID_present = False
+    for label in labels:
+        if label.description == "Identity document":
+            ID_present = True
+    while not ID_present:
+        cam.start()
+        image = cam.get_image()
+        pil_string_image = pygame.image.tostring(image, "RGB")
+        im = Image.frombytes("RGB", (1280, 720), pil_string_image)
+        im.save("image.png", "PNG")
+        cam.stop()
+        with io.open("image.png", 'rb') as image_file:
+            content = image_file.read()
+        image = vision.types.Image(content=content)
+        responseLabels = client.label_detection(image=image)
+        labels = responseLabels.label_annotations
+        ID_present = False
+        for label in labels:
+            if label.description == "Identity document":
+                ID_present = True
+    responseText = client.text_detection(image=image)
+    texts = responseText.text_annotations
+    textList = []
+    generic = ["the", "at", "of", "college", "university", "state", "new", "my", "student"]
+    characters = ["&", "\n", ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "#"]
+    for text in texts:
+        name = text.description
+        if name.lower() not in generic:
+            boo = True
+            for char in characters:
+                if char in name:
+                    boo = False
+            if boo and len(name) > 1:
+                textList.append(name)
+    textList.sort(key=len, reverse=True)
+    response = client.face_detection(image=image)
+    faces = response.face_annotations
+    return len(faces) == 2
+
+
 def main():
     row = []
     with open("que.txt") as f:
         lines = f.readlines()
     mainQ = lines.pop(0)
     text_to_speech(mainQ)
-    time.sleep(5)
+    time.sleep(2)
     language = mic.main()
     row.append(language)
-    for line in lines:
-        text_to_speech(line)
-        response = mic.main()
-        row.append(response)
-        time.sleep(5)
-    sheets.main(row)
+    card = lines.pop(0)
+    text_to_speech(card)
+    time.sleep(5)
+    if checkID():
+        for line in lines:
+            text_to_speech(line)
+            time.sleep(3)
+            response = mic.main()
+            row.append(response)
+        print(row)
+        sheets.main(row)
+    else:
+        print("something with our system didn't match up with your records")
+        print("please see a staff member to clear this up")
+
