@@ -2,6 +2,7 @@ from PIL import Image
 import pygame
 import time
 from src import mic
+from src import sheets
 
 def detect_faces():
     """Detects number of faces in an image."""
@@ -102,4 +103,4 @@ def main():
         response = mic.main()
         row.append(response)
         time.sleep(5)
-    """append array to end of google sheets"""
+    sheets.main(row)
