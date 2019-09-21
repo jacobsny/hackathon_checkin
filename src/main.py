@@ -75,6 +75,10 @@ def main():
     mainQ = lines.pop(0)
     text_to_speech(mainQ)
     """trigger listen and speech to text"""
+    for line in lines:
+        text_to_speech(line)
+        """trigger more listening and append response in array"""
+    """append array to end of google sheets"""
 
 
 
