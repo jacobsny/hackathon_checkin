@@ -13,5 +13,14 @@ image = cam.get_image()
 pil_string_image = pygame.image.tostring(image, "RGB")
 im = Image.frombytes("RGB", (1280, 720), pil_string_image)
 im.save("image.png", "PNG")
-print(main.detect_faces())
+cam.stop()
+while not main.detect_faces():
+    cam.start()
+    image = cam.get_image()
+    pil_string_image = pygame.image.tostring(image, "RGB")
+    im = Image.frombytes("RGB", (1280, 720), pil_string_image)
+    im.save("image.png", "PNG")
+    cam.stop()
+    time.sleep(1)
+
 
