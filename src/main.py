@@ -102,7 +102,7 @@ def checkID():
     pil_string_image = pygame.image.tostring(image, "RGB")
     im = Image.frombytes("RGB", (1280, 720), pil_string_image)
     im.save("image.png", "PNG")
-    im.show()
+    # im.show()
     cam.stop()
     from google.cloud import vision
     import io
@@ -121,7 +121,7 @@ def checkID():
         image = cam.get_image()
         pil_string_image = pygame.image.tostring(image, "RGB")
         im = Image.frombytes("RGB", (1280, 720), pil_string_image)
-        # im.save("image.png", "PNG")
+        im.save("image.png", "PNG")
         cam.stop()
         with io.open("image.png", 'rb') as image_file:
             content = image_file.read()
@@ -176,19 +176,25 @@ def main():
     languageInEnglish = mic.main('en-US')
     result = translate_client.detect_language(languageInEnglish)
     language = result['language']
+    print(language)
     row.append(language)
     card = lines.pop(0)
-    text_to_speech(card, language)
+    newCard = translate_client.translate(card, target_language=language)['translatedText']
+    text_to_speech(newCard, language)
     time.sleep(5)
     idCheck, name = checkID()
     row = [name] + row
     if idCheck:
         for line in lines:
             # line translated from en to lang
+            translatedText = translate_client.translate(line, target_language=language)
+            line = translatedText['translatedText']
             text_to_speech(line, language)
             time.sleep(3)
             response = mic.main(language)
             # response translated from lang to en
+            translatedText = translate_client.translate(response, target_language='en-US')
+            response = translatedText['translatedText']
             row.append(response)
         sheets.main(row)
     else:
