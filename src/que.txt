@@ -1,4 +1,5 @@
-May I see your ID? And please state your preferred language.
+Please state your preferred language. //UI shows "state your preferred language"
+May I see your ID?
 What is your shirt size?
 What University are you from?
 What are you excited for here?
