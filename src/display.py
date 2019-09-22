@@ -77,6 +77,8 @@ if __name__ == '__main__':
             sheets.main(row)
 
         else:
+            for i in range(len(lines)+1):
+                main.transition()
             print("something with our system didn't match up with your records")
             print("please see a staff member to clear this up")
         time.sleep(15)
