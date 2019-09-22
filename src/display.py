@@ -1,4 +1,4 @@
-settings = {'resolution': (1600, 900), 'fullscreen': False, 'preserve_aspect_ratio': True, 'framerate': 30,
+settings = {'resolution': (1920, 1080), 'fullscreen': False, 'preserve_aspect_ratio': True, 'framerate': 30,
             'debug': True, 'directory': '/home/jacob/PycharmProjects/hackathon_checkin/src/pictures',
             'transition': 'fade', 'transition_time': 1, 'image_time': 50000}
 import time
@@ -75,11 +75,19 @@ if __name__ == '__main__':
                 response = translatedText['translatedText']
                 row.append(response)
             sheets.main(row)
+            goodbye = "Thank you again for checking in using the Fam Lecks System"
+            translatedText = translate_client.translate(goodbye, target_language=language)
+            goodbye = translatedText['translatedText']
+            helper.text_to_speech(goodbye, language)
+            time.sleep(helper.wordCount(goodbye) * .4)
 
         else:
-            for i in range(len(lines)+1):
+            for i in range(len(lines) + 1):
                 main.transition()
-            print("something with our system didn't match up with your records")
-            print("please see a staff member to clear this up")
+            goodbye = "something with our system didn't match up with your records.. " \
+                      "Please see a staff member to clear this up"
+            translatedText = translate_client.translate(goodbye, target_language=language)
+            goodbye = translatedText['translatedText']
+            helper.text_to_speech(goodbye, language)
+            time.sleep(helper.wordCount(goodbye) * .4)
         time.sleep(15)
-
