@@ -6,12 +6,12 @@ import time
 import pygame.camera
 from PIL import Image
 from google.cloud import translate
-
+import keyboard
 from src import helper, mic, sheets
 from src.slider.slider import Main
+import threading
 
-if __name__ == '__main__':
-
+def presentation():
     pygame.init()
 
     main = Main(settings)
@@ -91,3 +91,29 @@ if __name__ == '__main__':
             helper.text_to_speech(goodbye, language)
             time.sleep(helper.wordCount(goodbye) * .4)
         time.sleep(15)
+
+
+def keyPress():
+    while True:  # making a loop
+        try:  # used try so that if user pressed other than the given key error will not be shown
+            if keyboard.is_pressed('q'):  # if key 'q' is pressed
+                if settings['fullscreen']:
+                    settings['fullscreen'] = False
+                else:
+                    settings['fullscreen'] = True
+                break  # finishing the loop
+            else:
+                pass
+        except:
+            break
+
+
+if __name__ == '__main__':
+    thread1 = threading.Thread(target=presentation)
+    thread1.start()
+    thread2 = threading.Thread(target=keyPress)
+    thread2.start()
+
+
+
+
