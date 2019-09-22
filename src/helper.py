@@ -164,40 +164,7 @@ def checkID():
     return rsvp, name
 
 
-def main():
-    row = []
-    with open("que.txt") as f:
-        lines = f.readlines()
-    mainQ = lines.pop(0)
-    text_to_speech(mainQ,'en-US')
-    time.sleep(2)
-    translate_client = translate.Client()
-
-    languageInEnglish = mic.main('en-US')
-    result = translate_client.detect_language(languageInEnglish)
-    language = result['language']
-    print(language)
-    row.append(language)
-    card = lines.pop(0)
-    newCard = translate_client.translate(card, target_language=language)['translatedText']
-    text_to_speech(newCard, language)
-    time.sleep(5)
-    idCheck, name = checkID()
-    row = [name] + row
-    if idCheck:
-        for line in lines:
-            # line translated from en to lang
-            translatedText = translate_client.translate(line, target_language=language)
-            line = translatedText['translatedText']
-            text_to_speech(line, language)
-            time.sleep(3)
-            response = mic.main(language)
-            # response translated from lang to en
-            translatedText = translate_client.translate(response, target_language='en-US')
-            response = translatedText['translatedText']
-            row.append(response)
-        sheets.main(row)
-    else:
-        print("something with our system didn't match up with your records")
-        print("please see a staff member to clear this up")
+def wordCount(str):
+    arr = str.split(" ")
+    return len(arr)
 
